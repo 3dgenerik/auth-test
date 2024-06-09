@@ -1,0 +1,29 @@
+
+.nav{
+
+
+    &__list{
+        display: flex;
+        background-color: grey;
+        padding: 20px;
+        margin: 0; 
+        padding: 1rem; 
+        gap:2rem;
+        
+    }
+
+    &__item{
+        
+        list-style:none;
+    }
+
+    &__link{
+        text-decoration: none;
+
+    }
+}
+
+.outlet-container{
+    padding: 1rem;
+}
+
