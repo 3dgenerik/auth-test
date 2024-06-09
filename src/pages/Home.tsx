@@ -1,5 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createSelector } from "@reduxjs/toolkit";
+import { useAppSelector } from "../redux/hooks";
+import { rootState } from "../redux/store";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { removeToken } from "../features/token.slice";
 
 
 // interface IUser{
@@ -44,7 +50,61 @@ import { createSelector } from "@reduxjs/toolkit";
 //     }
 // )
 
-export const Home = ()=>{
+interface ITokenDecoded{
+    name: string,
+    email: string,
+    exp:number,
+    iat:number
+}
 
-    return <div>Home</div>
+export const Home = ()=>{
+    const [token, setToken] = useState<ITokenDecoded>();
+    const {tokenData} = useAppSelector((state:rootState)=>state.token)
+
+    const dispatch = useDispatch();
+
+    const [expTime, setExpTime] = useState<number>()
+
+    const navigate = useNavigate();
+
+    useEffect(()=>{
+        if(tokenData){
+            const decoded: ITokenDecoded= jwtDecode(tokenData);
+            setToken(decoded);
+        }
+    },[tokenData])
+
+    useEffect(()=>{
+        const exp = token?.exp;
+        const currentTime = Math.floor(Date.now() / 1000);
+        let timeLeft:number;
+        if(exp){
+            timeLeft = exp - currentTime;
+        }
+        
+        setTimeout(()=>{
+            setExpTime(timeLeft)
+        },1000)
+
+        if(expTime && expTime <= 0){
+
+            dispatch(removeToken())
+
+            setExpTime(0)
+            navigate('/login')
+        }
+
+        
+    }, [expTime, token, token?.exp])
+
+
+    return(
+        <div>
+            <h1>
+                {token?.name} - {token?.email}
+            </h1>
+            <p>{expTime}</p>
+        </div>    
+    ) 
+    
 }

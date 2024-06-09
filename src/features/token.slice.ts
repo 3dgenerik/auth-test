@@ -1,11 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface IInitialState{
-    token: string | null
+    tokenData: string | null
 }
 
 const initialState: IInitialState = {
-    token: localStorage.getItem('token') || null
+    tokenData: localStorage.getItem('token') || null
 }
 
 const tokenSlice = createSlice({
@@ -13,13 +13,16 @@ const tokenSlice = createSlice({
     initialState,
     reducers:{
         saveToken:(state:IInitialState, action: PayloadAction<string>)=>{
-            state.token = action.payload;
+            state.tokenData = action.payload;
             localStorage.setItem('token', action.payload)
         },
 
         removeToken:(state:IInitialState)=>{
-            state.token = null;
+            state.tokenData = null;
             localStorage.removeItem('token')
         }
     }
 })
+
+export default tokenSlice.reducer;
+export const {saveToken, removeToken} = tokenSlice.actions;

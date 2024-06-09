@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { ILoginResponse, ILoginResponseGenerator, ILoginUser } from "../interface/interface";
 import axios, { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useAppDispatch } from "../redux/hooks";
+import { saveToken } from "../features/token.slice";
 
 
 interface ILogin {
@@ -35,16 +37,20 @@ export const Login = ()=>{
 
     const [responseToken, setResponseToken] = useState<any>();
 
+    const dispatch = useAppDispatch();
+
 
     const login = async ()=>{
         setLoading(true);
         try{
             const fetchLoginUser  = await axios.post('/login', formData) as ILoginResponseGenerator;
             const loginResponseData: ILoginResponse = fetchLoginUser.data;
-
-            localStorage.setItem('token', loginResponseData.token)
             
+            dispatch(saveToken(loginResponseData.token))
+            // localStorage.setItem('token', loginResponseData.token)
+
             toast.success(`User ${loginResponseData.user.name} loged in.`)
+            navigate('/')
             setLoading(false);
 
         }catch(err){
